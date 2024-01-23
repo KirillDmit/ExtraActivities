@@ -5,13 +5,13 @@ import com.example.extraactivities.repositories.UserRepository;
 import com.example.extraactivities.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import javax.mail.MessagingException;
+import org.springframework.mail.SimpleMailMessage;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -53,7 +53,7 @@ public class AppController {
 
     @PostMapping("/process_register")
     public String processRegister(User user, HttpServletRequest request)
-            throws UnsupportedEncodingException, MessagingException {
+            throws UnsupportedEncodingException {
         service.register(user, getSiteURL(request));
         return "register_success";
     }

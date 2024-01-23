@@ -2,16 +2,14 @@ package com.example.extraactivities.services;
 
 import com.example.extraactivities.models.User;
 import com.example.extraactivities.repositories.UserRepository;
-import net.bytebuddy.utility.RandomString;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 import java.util.Optional;
@@ -21,9 +19,6 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Autowired
     private JavaMailSender mailSender;
@@ -73,12 +68,10 @@ public class UserService {
     }
 
     public void register(User user, String siteURL)
-            throws UnsupportedEncodingException, MessagingException {
-        String encodedPassword = passwordEncoder.encode(user.getPassword());
-        user.setPassword(encodedPassword);
+            throws UnsupportedEncodingException {
+        //String encodedPassword = passwordEncoder.encode(user.getPassword());
+        //user.setPassword(encodedPassword);
 
-        String randomCode = RandomString.make(64);
-        user.setVerificationCode(randomCode);
         user.setEnabled(false);
 
         userRepository.save(user);
@@ -87,7 +80,7 @@ public class UserService {
     }
 
     private void sendVerificationEmail(User user, String siteURL)
-            throws MessagingException, UnsupportedEncodingException {
+            throws UnsupportedEncodingException {
         String toAddress = user.getEmail();
         String fromAddress = "keishamichalenko@gmail.com";
         String senderName = "URFU.Aparts";
@@ -98,21 +91,20 @@ public class UserService {
                 + "Thank you,<br>"
                 + "URFU.Aparts";
 
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message);
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(toAddress);
 
-        helper.setFrom(fromAddress, senderName);
-        helper.setTo(toAddress);
-        helper.setSubject(subject);
+        message.setSubject(subject);
+
+        message.setFrom(fromAddress);
 
         content = content.replace("[[name]]", user.getEmail());
         String verifyURL = siteURL + "/verify?code=" + user.getVerificationCode();
 
         content = content.replace("[[URL]]", verifyURL);
 
-        helper.setText(content, true);
+        message.setText(content);
 
         mailSender.send(message);
-
     }
 }

@@ -6,6 +6,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+
 @Data
 @Entity
 @Table(name = "users")
@@ -32,4 +33,22 @@ public class User {
 
     @Column(name = "verification_code")
     private String verificationCode;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "gender")
+    private String gender;
+
+    @Column(name = "link")
+    private String link;
+
+    @Column(name = "age")
+    private int age;
+
+    @Column(name = "rf")
+    private boolean rf;
+
+    @Column(name = "chronotype")
+    private String chronotype;
 }
